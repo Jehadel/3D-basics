@@ -2,6 +2,12 @@
 
 Simple demo of a 3D wireframe animation
 
+This demo shows how to :
+
+* display (wireframe) and animate (rotations) a 3D polyedron
+
+* manage hidden vertices/lines of a 3D object
+
 ## How to
 
 To run the demo :
