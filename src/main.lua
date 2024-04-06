@@ -28,17 +28,39 @@ end
 
 -- transform the x,y,z coordinates in the world ref
 -- to the coordinates in the viewpoint ref
-function pvTransform(px, py, pz, pvpMat)
+-- the matrix indexing is :
+-- | a b c d |
+-- | e f g h |
+-- | i j k … |
+--
+function pvTransform(pCoords, pvpMat)
 
-  local vpRef = {}
+  local vpCoords = {}
 
-  vpRef.x = pvpMat.a * px + pvpMat.pe * py
-  vpRef.y = pvpMat.b * px + pvpMat.pf * py + pvpMat.j * pz
-  vpRef.z = pvpMat.c * px + pvpMat.pg * py + pvpMat.k * pz + pvpMat.o
+  vpCoords.x = pvpMat.a * pCoords.x + pvpMat.pe * pCoords.y
+  vpCoords.y = pvpMat.b * pCoords.x + pvpMat.pf * pCoords.y + pvpMat.j * pCoords.z
+  vpCoords.z = pvpMat.c * pCoords.x + pvpMat.pg * pCoords.y + pvpMat.k * pCoords.z + pvpMat.o
 
-  return vpRef
+  return vpCoords
 
 end
 
 
+-- returns x, y coordinates on the screen 
+-- after projection on screen from the viewpoint ref
+function screenProj(pCoord, pDistance)
 
+  screenCoords = {}
+  screenCoords.x = pDistance * pCoords.x / pCoords.z -- + constante horizontale ajustement ?
+  screenCoords.y = pDistance * pCoords.y / pCoords.z -- + constate verticale  ajustenemnt ? 
+
+  return screenCoords
+
+end
+
+
+function drawObject()
+
+
+
+end
