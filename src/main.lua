@@ -120,3 +120,12 @@ function love.draw()
   drawObject(r, a1, a2, d)
 
 end
+
+
+function love.keypressed(key)
+
+  if key == 'escape' then
+    love.event.quit()
+  end
+
+end
