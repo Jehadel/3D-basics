@@ -15,7 +15,7 @@ object.vertices = {
 -- list of the 6 faces
 -- each face is defined by 4 vertices
 -- each table contains the vertices index
--- in the vartices table for a given face
+-- in the vertices table for a given face
 object.faces = {
                   {1, 2, 3, 4},
                   {2, 3, 6, 7},
