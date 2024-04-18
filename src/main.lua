@@ -72,29 +72,32 @@ function drawObject(pRho, pTheta, pPhi, pDistance)
 
   local transfMat = viewpointParam(pRho, pTheta, pPhi)
 
+  for i, face in ipairs(obj.faces) do
   local screenPoints = {}
   local refPoints = {}
 
-  for i, vertice in ipairs(obj.vertices) do
-    point = {}
-    point.x = vertice[1]
-    point.y = vertice[2]
-    point.z = vertice[3]
-    transformedPoint = pvTransform(point, transfMat)
-    table.insert(refPoints, transformedPoint)
-    table.insert(screenPoints, screenProj(transformedPoint, pDistance))
+    for j, vertice in ipairs(face) do
+      point = {}
+      point.x = obj.vertices[vertice][1]
+      point.y = obj.vertices[vertice][2]
+      point.z = obj.vertices[vertice][3]
+
+      transformedPoint = pvTransform(point, transfMat)
+      table.insert(refPoints, transformedPoint)
+      table.insert(screenPoints, screenProj(transformedPoint, pDistance))
+    end
+
+    table.insert(screenPoints, screenPoints[1])
+
+    for idx = 1, #screenPoints-1 do
+      love.graphics.line(
+        screenPoints[idx].x + SCREEN_W/2,
+        screenPoints[idx].y + SCREEN_H/2,
+        screenPoints[idx+1].x + SCREEN_W/2,
+        screenPoints[idx+1].y + SCREEN_H/2
+        )
+    end
   end
-
-  table.insert(screenPoints, screenPoints[1])
-
-  for idx = 1, #screenPoints-1 do
-    love.graphics.line(
-                       screenPoints[idx].x + SCREEN_W/2,
-                       screenPoints[idx].y + SCREEN_H/2,
-                       screenPoints[idx+1].x + SCREEN_W/2,
-                       screenPoints[idx+1].y + SCREEN_H/2 
-                      )
-  end  
 
 end
 
