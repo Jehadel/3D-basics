@@ -1,6 +1,6 @@
 # 3D-basics
 
-Simple demo of a 3D wireframe animation
+[Simple demo](https://jehadel.github.io/3D-basics/) of a 3D wireframe animation
 
 This demo shows how to :
 
