@@ -165,90 +165,55 @@ function uniqueEdges(faces)
 
 end
 
+function transformVertices(pRho, pTheta, pPhi, pDistance)
+  
+  local transfMat = viewpointParam(pRho, pTheta, pPhi)
+
+  local transformedVertices = {}
+  for i, vertex in ipairs(obj.vertices) do
+    p = {}
+    p.x = vertex[1]
+    p.y = vertex[2]
+    p.z = vertex[3]
+    transformedVertices[i] = pvTransform(p, transfMat)
+  end
+
+  return transformedVertices
+
+end
+   
 
 function drawObject(pRho, pTheta, pPhi, pDistance)
 
-  -- determine which faces are visible (compute normal for each face) 
-  --  -- 2d argument is camera position, not relevant here
+  local transformedVertices = transformVertices(pRho, pTheta, pPhi, pDistance)
 
-  -- extract from faces "unique" edges that will be drawn (edges can’t appear twice in the list) 
- 
- 
-  local transfMat = viewpointParam(pRho, pTheta, pPhi)
+  local facesToDraw = {}
 
-  if hide then -- 
-    -- hide == true : we need to project each face
-    -- and then compute which one is hidden
-    
-    -- create/compute transformed vertices
-    transformedVertices = {}
-    for i, vertex in ipairs(obj.vertices) do
-      p = {}
-      p.x = vertex[1]
-      p.y = vertex[2]
-      p.z = vertex[3]
-      transformedVertices[i] = pvTransform(p, transfMat)
-    end
-    
-    -- evaluate which face is visible
-    local facesToDraw = visibleFaces(obj.faces, transformedVertices, {x=0, y=0, z=-1})
+  if hide == true then
 
-    -- draw unique edges from visible faces
-
-    for _, face in ipairs(facesToDraw) do
-
-      screenpoint = {}
-      for _, vertex in ipairs(face) do
-        table.insert(screenpoint, screenProj(transformedVertices[vertex], pDistance))
-      end
-
-      for i=1, #screenpoint do
-        love.graphics.line(
-          screenpoint[i].x + SCREEN_W/2,
-          screenpoint[i].y + SCREEN_H/2,
-          screenpoint[i % #face + 1].x + SCREEN_W/2,
-          screenpoint[i % #face + 1].y + SCREEN_H/2
-        )
-
-      end
-    end
-
-
-
-
-
+    -- if we have to hide backfaces, then we have to compute which faces are visible
+    facesToDraw = visibleFaces(obj.faces, transformedVertices, {x=0, y=0, z=-1})
 
   else
 
-  -- hide == false : don’t need to compute which faces are hidden
-  -- iterate through unique edges list and 
-  -- compute projection of corresponding vertices on screen
+    -- if no face is hidden we have to draw all faces
+    facesToDraw = obj.faces
+    
+  end
 
-    local edgesToDraw = uniqueEdges(obj.faces)
+  -- now we have to filter edges to draw (each edge should only appears once in the list)
+  local edgesToDraw = uniqueEdges(facesToDraw)
 
-    for _, edge in pairs(edgesToDraw) do
+  for _, edge in pairs(edgesToDraw) do
+    screenPoint1 = screenProj(transformedVertices[edge[1]], pDistance)
+    screenPoint2 = screenProj(transformedVertices[edge[2]], pDistance)
 
-      p1 = {}
-      p1.x = obj.vertices[edge[1]][1]
-      p1.y = obj.vertices[edge[1]][2]
-      p1.z = obj.vertices[edge[1]][3]
-      transformedPoint1 = pvTransform(p1, transfMat)
-      screenPoint1 = screenProj(transformedPoint1, pDistance)
-
-      p2 = {}
-      p2.x = obj.vertices[edge[2]][1]
-      p2.y = obj.vertices[edge[2]][2]
-      p2.z = obj.vertices[edge[2]][3]
-      transformedPoint2 = pvTransform(p2, transfMat)
-      screenPoint2 = screenProj(transformedPoint2, pDistance)
-
-      love.graphics.line(
-        screenPoint1.x + SCREEN_W/2,
-        screenPoint1.y + SCREEN_H/2,
-        screenPoint2.x + SCREEN_W/2,
-        screenPoint2.y + SCREEN_H/2
-        )
-    end
+    love.graphics.line(
+      screenPoint1.x + SCREEN_W/2,
+      screenPoint1.y + SCREEN_H/2,
+      screenPoint2.x + SCREEN_W/2,
+      screenPoint2.y + SCREEN_H/2
+      )
   end
 
 end
